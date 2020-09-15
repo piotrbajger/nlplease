@@ -15,7 +15,9 @@ class TestCountVectorizer(TestCase):
             "i do not like trains",
         ]
 
-        result = csr_matrix(count_vocab(raw_documents))
+        words, mat = count_vocab(raw_documents)
+
+        result = csr_matrix(mat)
         expected_result = csr_matrix(
             np.array([
                 [1, 1, 1, 0, 0, 0, 0],
@@ -24,5 +26,8 @@ class TestCountVectorizer(TestCase):
             ])
         )
         diff = result != expected_result
+
+        for word in ["i", "like", "trains", "are", "cool", "do", "not"]:
+            self.assertIn(word, words)
 
         self.assertFalse(diff.todense().any())

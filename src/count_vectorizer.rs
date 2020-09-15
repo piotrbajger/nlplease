@@ -2,7 +2,7 @@ use regex::Regex;
 use std::collections::HashMap;
 
 
-pub fn count_vocab(raw_documents: Vec<&str>) -> (Vec<i64>, Vec<i64>, Vec<usize>) {
+pub fn count_vocab(raw_documents: Vec<&str>) -> (HashMap<String, i64>, (Vec<i64>, Vec<i64>, Vec<usize>)) {
     let re = Regex::new(r"^?\b\w+\b").unwrap();
 
     let mut vocabulary: HashMap<String, i64> = HashMap::new();
@@ -35,5 +35,5 @@ pub fn count_vocab(raw_documents: Vec<&str>) -> (Vec<i64>, Vec<i64>, Vec<usize>)
         indptr.push(data.len());
     }
 
-    (data, indices, indptr)
+    (vocabulary, (data, indices, indptr))
 }
