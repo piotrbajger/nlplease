@@ -1,0 +1,16 @@
+[package]
+name = "nlplease"
+version = "0.1.0"
+authors = ["piotrbajger <piotr.bajger@hotmail.com>"]
+edition = "2018"
+
+[lib]
+name = "nlplease"
+crate-type = ["cdylib"]
+
+[dependencies.pyo3]
+version = "0.11.1"
+features = ["extension-module"]
+
+[dependencies]
+regex = "1"
