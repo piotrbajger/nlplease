@@ -9,9 +9,9 @@ mod count_vectorizer;
 fn nlplease(_py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "count_vocab")]
-    fn count_vocab(_py: Python, py_raw_documents: &PyList) -> (HashMap<String, i64>, (Vec<i64>, Vec<i64>, Vec<usize>)) {
-        let raw_documents: Vec<&str> = py_raw_documents.extract().unwrap();
-        count_vectorizer::count_vocab(raw_documents)
+    fn count_vocab(_py: Python, py_raw_documents: &PyList, lower: bool) -> (HashMap<String, i64>, (Vec<i64>, Vec<i64>, Vec<usize>)) {
+        let raw_documents: Vec<String> = py_raw_documents.extract().unwrap();
+        count_vectorizer::count_vocab(raw_documents, lower)
     }
 
     Ok(())
