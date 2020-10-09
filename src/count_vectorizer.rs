@@ -1,9 +1,11 @@
+use crate::tokenizer::Tokenizer;
+
 use regex::Regex;
 use std::collections::HashMap;
 
 
 pub fn count_vocab(
-    raw_documents: Vec<String>, lower: bool
+    raw_documents: Vec<String>, lower: bool, ngram_range: (usize, usize)
 ) -> (HashMap<String, i64>, (Vec<i64>, Vec<i64>, Vec<usize>)) {
     let re = Regex::new(r"(?u)\b\w\w+\b").unwrap();
 
@@ -22,8 +24,9 @@ pub fn count_vocab(
     for doc in raw_documents.iter() {
         let mut counter: HashMap<String, i64> = HashMap::new();
         let doc: String = if lower { doc.to_lowercase() } else { doc.into() };
+        let tokenizer = Tokenizer::new(&doc, ngram_range, &re);
 
-        for cap in re.find_iter(&doc) {
+        for cap in tokenizer {
             temp_token = cap.as_str();
             // Add word to the vocabulary if not already present
             if !vocabulary.contains_key(temp_token) {

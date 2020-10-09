@@ -1,12 +1,12 @@
-import setuptools
-from setuptools_rust import RustExtension, Binding
+from setuptools import setup
+from setuptools_rust import RustExtension
 
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-setuptools.setup(
+setup(
     name="nlplease",
     version="0.0.1",
     author="Piotr Bajger",
@@ -15,12 +15,17 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/piotrbajger/nplplease",
     python_requires='>=3.6',
+    packages=["nlplease"],
     setup_requires=[
         "setuptools-rust",
         "wheel"
     ],
     install_requires=[
         "scipy",
+        "sklearn",
     ],
-    rust_extensions=[RustExtension("nlplease.nlplease", binding=Binding.PyO3)]
+    rust_extensions=[RustExtension("nlplease.nlplease")],
+    include_package_data=True,
+    zip_safe=False
+
 )
