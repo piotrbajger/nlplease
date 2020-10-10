@@ -1,3 +1,5 @@
+![Build](https://github.com/piotrbajger/nlplease/workflows/Build/badge.svg)
+
 # NLPlease
 
 A Rust-enhanced Python Natural Language Processing package!
