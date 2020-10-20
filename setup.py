@@ -27,5 +27,4 @@ setup(
     rust_extensions=[RustExtension("nlplease.nlplease")],
     include_package_data=True,
     zip_safe=False
-
 )

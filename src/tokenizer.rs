@@ -2,49 +2,54 @@ use regex::Regex;
 use std::cmp::min;
 
 
-pub struct Tokenizer<'a> {
-    grams: Vec<&'a str>,
-    grams_len: usize,
+pub struct Tokenizer {
+    re: Regex,
+    lowercase: bool,
+    ngram_min: usize,
     ngram_max: usize,
-    ngram_len: usize,
-    ngram_idx: usize,
 }
 
-
-impl<'a> Tokenizer<'a> {
-    pub fn new(doc: &'a str, ngram_range: (usize, usize), re: &Regex) -> Tokenizer<'a> {
-        let grams: Vec<&str> = re
-            .find_iter(doc)
-            .map(|x| x.as_str())
-            .collect();
-        let grams_len = grams.len();
-
-        let ngram_min = ngram_range.0;
-        let ngram_max = min(ngram_range.1, grams.len());
-
+impl Tokenizer {
+    pub fn new(regex_string: &str, lowercase: bool, ngram_range: (usize, usize)) -> Tokenizer {
+        let re = Regex::new(regex_string).unwrap();
         Tokenizer {
-            grams,
-            grams_len,
-            ngram_max,
-            ngram_len: ngram_min,
-            ngram_idx: 0,
+            re,
+            lowercase,
+            ngram_min: ngram_range.0,
+            ngram_max: ngram_range.1,
         }
     }
-}
 
-impl<'a> Iterator for Tokenizer<'a> {
-    type Item = String;
+    pub fn tokenize(&self, doc: String) -> Vec<String> {
+        // Convert to lowercase if needed
+        let doc: String = if self.lowercase {
+            doc.to_lowercase()
+        } else {
+            doc
+        };
 
-    fn next(&mut self) -> Option<String> {
-        if self.ngram_idx + self.ngram_len > self.grams_len {
-            self.ngram_idx = 0;
-            self.ngram_len += 1;
-            if self.ngram_len > self.ngram_max { return None }
+        let words: Vec<&str> = self.re
+            .find_iter(&doc)
+            .map(|x| x.as_str())
+            .collect();
+
+        let word_count = words.len();
+
+        let ngram_min = self.ngram_min;
+        let ngram_max = min(self.ngram_max, word_count);
+
+        let mut tokens: Vec<String> = Vec::with_capacity(
+            word_count * (ngram_max - ngram_min + 1)
+        );
+
+        for n in ngram_min..ngram_max + 1 {
+            for i in 0..word_count - n + 1 {
+                tokens.push(
+                    words[i..i+n].join(" ")
+                );
+            }
         }
 
-        let ngram = self.grams[self.ngram_idx..self.ngram_idx + self.ngram_len].join(" ");
-
-        self.ngram_idx += 1;
-        Some(ngram)
+        tokens
     }
 }
