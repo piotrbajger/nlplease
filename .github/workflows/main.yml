@@ -31,6 +31,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install setuptools wheel setuptools-rust flake8 nose
 
+      - name: Run clippy
+        run: cargo clippy
+
+      - name: Run flake8
+        run: python -m flake8 nlplease tests
+
       - name: Run setup.py
         run: python setup.py develop
 
