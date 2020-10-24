@@ -18,6 +18,8 @@ class TestNlpleaseCountVectorizer(TestCase):
         cls.params = [
             dict(lowercase=True, ngram_range=(1, 2), min_df=1, max_df=2),
             dict(lowercase=False, ngram_range=(2, 4), min_df=2, max_df=3),
+            dict(lowercase=True, ngram_range=(1, 2), max_features=3),
+            dict(lowercase=False, ngram_range=(1, 1), max_features=300),
         ]
 
     def test_process_corpus_ngrams(self):
@@ -30,6 +32,6 @@ class TestNlpleaseCountVectorizer(TestCase):
             mat = vect.fit_transform(self.raw_documents)
             ref_mat = ref_vect.fit_transform(self.raw_documents)
 
+            self.assertEqual(vect.vocabulary_, ref_vect.vocabulary_, msg=fail_msg)
             self.assertEqual(mat.shape, ref_mat.shape, msg=fail_msg)
             self.assertFalse((mat != ref_mat).todense().any(), msg=fail_msg)
-            self.assertEqual(vect.vocabulary_, ref_vect.vocabulary_, msg=fail_msg)

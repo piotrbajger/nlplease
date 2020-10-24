@@ -20,6 +20,7 @@ fn nlplease(_py: Python, m: &PyModule) -> PyResult<()> {
         max_doc_freq: Option<f32>,
         min_doc_count: Option<i32>,
         max_doc_count: Option<i32>,
+        max_features: Option<usize>,
         vocabulary: Vocabulary,
     ) -> (Vocabulary, CsrMatrix) {
         let raw_documents: Vec<String> = py_raw_documents.extract().unwrap();
@@ -31,6 +32,7 @@ fn nlplease(_py: Python, m: &PyModule) -> PyResult<()> {
             lowercase,
             ngram_range,
             token_bounds,
+            max_features,
             vocabulary,
         )
     }

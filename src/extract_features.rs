@@ -18,6 +18,7 @@ pub fn extract_features(
     lowercase: bool,
     ngram_range: (usize, usize),
     token_bounds: TokenBounds,
+    max_features: Option<usize>,
     mut vocabulary: Vocabulary,
 ) -> (Vocabulary, CsrMatrix) {
     let fixed_vocabulary = !vocabulary.is_empty();
@@ -51,7 +52,7 @@ pub fn extract_features(
                 vocabulary.insert(temp_token.to_string(), word_count);
                 word_count += 1;
             }
-            if let Some(token_index ) = vocabulary.get(&cap) {
+            if let Some(token_index) = vocabulary.get(&cap) {
                 *counter.entry(*token_index).or_insert(0) += 1
             };
         }
@@ -71,6 +72,7 @@ pub fn extract_features(
            &indptr,
            doc_count,
            token_bounds,
+           max_features,
        )
     }
     else {
@@ -86,6 +88,7 @@ fn limit_features(
     indptr: &[usize],
     doc_count: usize,
     token_bounds: TokenBounds,
+    max_features: Option<usize>,
 ) -> (Vocabulary, CsrMatrix) {
     let (min_doc_count, max_doc_count) = calculate_term_count_bounds(doc_count, token_bounds);
 
@@ -95,10 +98,28 @@ fn limit_features(
     for term_index in indices.iter() {
         term_dc[*term_index] += 1;
     }
-    let term_mask: Vec<bool> = term_dc
+    let mut term_mask: Vec<bool> = term_dc
         .iter()
         .map(|x| min_doc_count <= *x && *x <= max_doc_count)
         .collect();
+
+    // Find the cutoff point to store just the top max_features features,
+    // or skip altogether if max_features is not provided.
+    if let Some(max_features) = max_features {
+        let mut unused_terms: Vec<(usize, &usize)> = term_dc
+            .iter()
+            .enumerate()
+            .filter(|x| term_mask[x.0])
+            .collect();
+        unused_terms.sort_by_key(|x| *x.1);
+
+        if max_features < unused_terms.len() {
+            let unused_count = unused_terms.len() - max_features;
+            for term in unused_terms[..unused_count].iter() {
+                term_mask[term.0] = false;
+            }
+        }
+    }
 
     let index_mask: Vec<bool> = indices
         .iter()

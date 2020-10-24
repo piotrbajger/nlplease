@@ -24,8 +24,7 @@ class NlpleaseCountVectorizer(CountVectorizer):
         """
         if not isinstance(raw_documents, list):
             raise ValueError(
-                "A list of raw text documents expected, "
-                f"got {type(raw_documents)}."
+                "A list of raw text documents expected, " f"got {type(raw_documents)}."
             )
 
         self._validate_params()
@@ -55,6 +54,7 @@ class NlpleaseCountVectorizer(CountVectorizer):
             max_doc_freq,
             min_doc_count,
             max_doc_count,
+            self.max_features,
             self.vocabulary_,
         )
 
