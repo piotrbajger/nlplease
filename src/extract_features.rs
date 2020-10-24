@@ -1,5 +1,5 @@
 use crate::tokenizer::Tokenizer;
-
+use std::collections::HashSet;
 use std::collections::HashMap;
 
 
@@ -20,6 +20,7 @@ pub fn extract_features(
     token_bounds: TokenBounds,
     max_features: Option<usize>,
     mut vocabulary: Vocabulary,
+    stopwords: HashSet<String>,
 ) -> (Vocabulary, CsrMatrix) {
     let fixed_vocabulary = !vocabulary.is_empty();
 
@@ -48,7 +49,10 @@ pub fn extract_features(
         for cap in tokenizer.tokenize(doc.to_string()) {
             temp_token = cap.as_str();
             // Add word to the vocabulary if not already present
-            if !vocabulary.contains_key(temp_token) && !fixed_vocabulary {
+            if !vocabulary.contains_key(temp_token)
+               && !fixed_vocabulary
+               && !stopwords.contains(temp_token)
+             {
                 vocabulary.insert(temp_token.to_string(), word_count);
                 word_count += 1;
             }

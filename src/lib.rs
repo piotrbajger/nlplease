@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use pyo3::prelude::*;
 use pyo3::types::*;
 
@@ -22,6 +23,7 @@ fn nlplease(_py: Python, m: &PyModule) -> PyResult<()> {
         max_doc_count: Option<i32>,
         max_features: Option<usize>,
         vocabulary: Vocabulary,
+        stopwords: HashSet<String>,
     ) -> (Vocabulary, CsrMatrix) {
         let raw_documents: Vec<String> = py_raw_documents.extract().unwrap();
         let token_bounds = TokenBounds {
@@ -34,6 +36,7 @@ fn nlplease(_py: Python, m: &PyModule) -> PyResult<()> {
             token_bounds,
             max_features,
             vocabulary,
+            stopwords,
         )
     }
 

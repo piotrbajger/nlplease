@@ -20,6 +20,7 @@ class TestNlpleaseCountVectorizer(TestCase):
             dict(lowercase=False, ngram_range=(2, 4), min_df=2, max_df=3),
             dict(lowercase=True, ngram_range=(1, 2), max_features=3),
             dict(lowercase=False, ngram_range=(1, 1), max_features=300),
+            dict(stop_words=set(["cool"])),
         ]
 
     def test_process_corpus_ngrams(self):

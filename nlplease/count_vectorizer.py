@@ -12,6 +12,31 @@ class NlpleaseCountVectorizer(CountVectorizer):
     to do the heavy-lifting.
     """
 
+    def _validate_params(self):
+        """
+        Validate parameters.
+
+        Prepares the document frequency clipping boundaries
+        and sets up stopwords.
+        """
+        super()._validate_params()
+
+        if isinstance(self.min_df, numbers.Integral):
+            self._min_doc_count = self.min_df
+            self._min_doc_freq = None
+        else:
+            self._min_doc_count = None
+            self._min_doc_freq = self.min_df
+        if isinstance(self.max_df, numbers.Integral):
+            self._max_doc_count = self.max_df
+            self._max_doc_freq = None
+        else:
+            self._max_doc_count = None
+            self._max_doc_freq = self.max_df
+
+        if self.stop_words is None:
+            self.stop_words = set()
+
     def fit_transform(self, raw_documents, y=None):
         """ "
         Learn the vocabulary dictionary and return the document-term matrix.
@@ -30,19 +55,6 @@ class NlpleaseCountVectorizer(CountVectorizer):
         self._validate_params()
         self._validate_vocabulary()
 
-        if isinstance(self.min_df, numbers.Integral):
-            min_doc_count = self.min_df
-            min_doc_freq = None
-        else:
-            min_doc_count = None
-            min_doc_freq = self.min_df
-        if isinstance(self.max_df, numbers.Integral):
-            max_doc_count = self.max_df
-            max_doc_freq = None
-        else:
-            max_doc_count = None
-            max_doc_freq = self.max_df
-
         if not self.fixed_vocabulary_:
             self.vocabulary_ = {}
 
@@ -50,12 +62,13 @@ class NlpleaseCountVectorizer(CountVectorizer):
             raw_documents,
             self.lowercase,
             self.ngram_range,
-            min_doc_freq,
-            max_doc_freq,
-            min_doc_count,
-            max_doc_count,
+            self._min_doc_freq,
+            self._max_doc_freq,
+            self._min_doc_count,
+            self._max_doc_count,
             self.max_features,
             self.vocabulary_,
+            self.stop_words,
         )
 
         x = scipy.sparse.csr_matrix(mat, shape=(len(mat[2]) - 1, len(vocabulary)))
